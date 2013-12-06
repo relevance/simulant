@@ -12,6 +12,7 @@ lein_install() {
     echo "Lein is already installed"
   else
     mkdir -p "${HOME}/bin"
+    export HTTP_CLIENT="curl --insecure -f -L -o"
     curl -o "${HOME}/bin/lein" https://raw.github.com/technomancy/leiningen/stable/bin/lein
     chmod a+x "${HOME}/bin/lein"
 
