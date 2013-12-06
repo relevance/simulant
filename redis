@@ -1,0 +1,53 @@
+# Redis -*- sh -*-
+
+case $PKG in
+brew) redis_pkg=redis ;;
+macport) redis_pkg=redis ;;
+esac
+
+redis_check() {
+  ${PKG}_check ${redis_pkg}
+}
+
+redis_uninstall() {
+  redis-cli shutdown
+
+  ${PKG}_uninstall ${redis_pkg}
+}
+
+redis_install() {
+  if ${PKG}_check ${redis_pkg} ; then
+    echo "Redis already installed"
+  else
+    ${PKG}_install ${redis_pkg}
+  fi
+}
+
+redis_status() {
+  if [ $PKG = "brew" ] ; then
+     /usr/local/bin/redis-cli ping
+  elif [ $PKG = "macport" ] ; then
+    /opt/local/bin/redis-cli ping
+  fi
+}
+
+redis_start() {
+  if [ 0 -eq $fg ] ; then
+    redis-server &
+  else
+    redis-server
+  fi
+}
+
+redis_stop() {
+  if [ $PKG = "brew" ] ; then
+     /usr/local/bin/redis-cli shutdown
+  elif [ $PKG = "macport" ] ; then
+    /opt/local/bin/redis-cli shutdown
+  fi
+}
+
+redis_restart() {
+  redis_stop
+  redis_start
+}

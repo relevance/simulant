@@ -1,0 +1,17 @@
+# Rack     -*- sh -*-
+
+rack_check() {
+  ${SUDO_GEM} gem list -v 1.1.0 rack | grep rack >/dev/null
+}
+
+rack_install() {
+  if rack_check ; then
+    echo "Rack already installed"
+  else
+    ${SUDO_GEM} gem install -v 1.1.0 rack --no-rdoc --no-ri
+  fi
+}
+
+rack_uninstall() {
+  ${SUDO_GEM} gem uninstall -a rack
+}

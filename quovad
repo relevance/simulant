@@ -1,0 +1,42 @@
+# Quovad    -*- sh -*-
+
+QUOVAD_HOME="${ROOT_DIR}/quovad"
+
+quovad_check() {
+  ls ${QUOVAD_HOME} >/dev/null 2>&1
+}
+
+quovad_install() {
+  if quovad_check ; then
+    echo "Quovad already installed"
+  else
+    cd "${ROOT_DIR}"
+    git clone git@github.com:runa-dev/quovad.git quovad
+    cd "${QUOVAD_HOME}"
+    lein clean
+    lein uberjar
+    ./bin/clu quovac etc/test-quovadb.csv etc/quovadb.kso
+  fi
+}
+
+quovad_uninstall() {
+  rm -rf "${QUOVAD_HOME}"
+}
+
+quovad_status() {
+  curl http://localhost:9090/
+}
+
+quovad_start() {
+  cd "${QUOVAD_HOME}"
+  ${SELECT_RUBY}
+  if [ 0 -eq $fg ] ; then
+    ./bin/clu quovad &
+  else
+    ./bin/clu quovad
+  fi
+}
+
+quovad_stop() {
+  pkill -9  -fl -- 'quovad.clu quovad'
+}

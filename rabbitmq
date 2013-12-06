@@ -1,0 +1,61 @@
+# RabbitMQ     -*- sh -*-
+
+case $PKG in
+brew) rabbitmq_pkg=rabbitmq ;;
+macport) rabbitmq_pkg=rabbitmq-server ;;
+esac
+
+rabbitmq_check() {
+  ${PKG}_check ${rabbitmq_pkg}
+}
+
+rabbitmq_uninstall() {
+  rabbitmq-cli shutdown
+
+  ${PKG}_uninstall ${rabbitmq_pkg}
+}
+
+rabbitmq_install() {
+  if ${PKG}_check ${rabbitmq_pkg} ; then
+    echo "RabbitMQ already installed"
+  else
+    ${PKG}_install ${rabbitmq_pkg}
+  fi
+}
+
+rabbitmq_status() {
+  if [ $PKG = "brew" ] ; then
+     /usr/local/sbin/rabbitmqctl status
+  elif [ $PKG = "macport" ] ; then
+    sudo /opt/local/sbin/rabbitmqctl status
+  fi
+}
+
+rabbitmq_start() {
+  if [ $PKG = "brew" ] ; then
+   if [ 0 -eq $fg ] ; then
+      /usr/local/sbin/rabbitmq-server &
+   else
+      /usr/local/sbin/rabbitmq-server
+   fi
+  elif [ $PKG = "macport" ] ; then
+   if [ 0 -eq $fg ] ; then
+     sudo /opt/local/sbin/rabbitmq-server &
+   else
+     sudo /opt/local/sbin/rabbitmq-server
+   fi
+  fi
+}
+
+rabbitmq_stop() {
+  if [ $PKG = "brew" ] ; then
+     /usr/local/sbin/rabbitmqctl stop
+  elif [ $PKG = "macport" ] ; then
+    sudo /opt/local/sbin/rabbitmqctl stop
+  fi
+}
+
+rabbitmq_restart() {
+  rabbitmq_stop
+  rabbitmq_start
+}
