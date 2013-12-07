@@ -38,5 +38,5 @@ quovad_start() {
 }
 
 quovad_stop() {
-  pkill -9  -fl -- 'quovad.clu quovad'
+  pkill -9  -f -- 'quovad.clu quovad'
 }

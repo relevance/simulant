@@ -43,5 +43,5 @@ dashboard_start() {
 }
 
 dashboard_stop() {
-  pkill -9  -fl -- '-p 3000'
+  pkill -9  -f -- '-p 3000'
 }
