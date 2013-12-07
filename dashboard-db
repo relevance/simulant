@@ -1,15 +1,15 @@
 # Dashboard DB Setup   -*- sh -*-
 
 if [ "" != "${JOB_NAME}" ] ; then
-  DASHBOARD_DB_NAME=$(echo "${JOB_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z09]//g')
+  DASHBOARD_DB_NAME=dashboard_ci_dev_$(echo "${JOB_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]//g')
   DASHBOARD_DB_HOST="rds.runa.com"
   DASHBOARD_DB_USER=dashboard
-  DASHBOARD_DB_PASSWORD=uCheic5uGae9IfooBoong3yuaebaePh8
+  DASHBOARD_DB_PASSWORD="uCheic5uGae9IfooBoong3yuaebaePh8"
 else
-  DASHBOARD_DB_NAME=runa_dashboard_development
+  DASHBOARD_DB_NAME="runa_dashboard_development"
   DASHBOARD_DB_HOST="localhost"
-  DASHBOARD_DB_USER=root
-  DASHBOARD_DB_PASSWORD=retold-fever
+  DASHBOARD_DB_USER="root"
+  DASHBOARD_DB_PASSWORD="retold-fever"
 fi
 
 dashboard_db_check() {
