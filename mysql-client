@@ -3,6 +3,7 @@
 case $PKG in
 brew) mysql_pkg=mysql ;;
 macport) mysql_pkg=mysql55 ;;
+apt) mysql_pkg=libmysqlclient-dev ;;
 esac
 
 mysql_check() {
