@@ -2,16 +2,18 @@
 
 if [ "" != "${JOB_NAME}" ] ; then
   DASHBOARD_DB_NAME=$(echo "${JOB_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z09]//g')
+  DASHBOARD_DB_HOST="rds.runa.com"
   DASHBOARD_DB_USER=dashboard
   DASHBOARD_DB_PASSWORD=uCheic5uGae9IfooBoong3yuaebaePh8
 else
   DASHBOARD_DB_NAME=runa_dashboard_development
-  DASHBOARD_DB_ROOT=root
-  DASHBOARD_DB_PASSWORD=runa_dashboard_development
+  DASHBOARD_DB_HOST="localhost"
+  DASHBOARD_DB_USER=root
+  DASHBOARD_DB_PASSWORD=retold-fever
 fi
 
 dashboard_db_check() {
-  echo 'select count(*) from users;' | mysql -u "${DASHBOARD_DB_USER}" --password="${DASHBOARD_DB_PASSWORD}" "${DASHBOARD_DB_NAME}" && ls config/database.yml
+  echo 'select count(*) from users;' | mysql -h "${DASHBOARD_DB_HOST}" -u "${DASHBOARD_DB_USER}" --password="${DASHBOARD_DB_PASSWORD}" "${DASHBOARD_DB_NAME}" >/dev/null && ls config/database.yml >/dev/null
 }
 
 dashboard_db_install() {
