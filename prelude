@@ -104,7 +104,12 @@ apt_uninstall() {
 #### All ##############################
 
 check_cmd() {
-  for d in $DEPS ; do
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
     if ${d}_check ; then
       echo "${d}\t\t\tOK"
     else
@@ -114,7 +119,7 @@ check_cmd() {
 }
 
 uninstall_cmd() {
-  if [ "all" = $1 ] ; then
+  if [ "all" = "$1" ] ; then
       pkgs=${DEPS}
   else
       pkgs=$*
@@ -125,7 +130,7 @@ uninstall_cmd() {
 }
 
 install_cmd() {
-  if [ "all" = $1 ] ; then
+  if [ "all" = "$1" ] ; then
       pkgs=${DEPS}
   else
       pkgs=$*
@@ -136,7 +141,7 @@ install_cmd() {
 }
 
 status_cmd() {
-  if [ "all" = $1 ] ; then
+  if [ "all" = "$1" ] ; then
       pkgs=${DEPS}
   else
       pkgs=$*
@@ -151,7 +156,7 @@ start_cmd() {
     fg=1;
     shift ;
   fi
-  if [ "all" = $1 ] ; then
+  if [ "all" = "$1" ] ; then
       pkgs=${DEPS}
   else
       pkgs=$*
@@ -162,7 +167,7 @@ start_cmd() {
 }
 
 stop_cmd() {
-  if [ "all" = $1 ] ; then
+  if [ "all" = "$1" ] ; then
       pkgs=${DEPS}
   else
       pkgs=$*

@@ -1,7 +1,7 @@
 # Ant   -*- sh -*-
 
 ANT_VERSION="1.9.2"
-ANT_HOME="${HOME}/work/runa/ant-${ANT_VERSION}"
+ANT_HOME="${ROOT_DIR}/ant-${ANT_VERSION}"
 ANT_DOWNLOAD_URL="http://www.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.bz2"
 
 ant_check() {
@@ -12,7 +12,7 @@ ant_install() {
   if ant_check ; then
     echo "Ant already installed"
   else
-    cd ~/work/runa/
+    cd "${ROOT_DIR}"
     rm -rf apache-ant-${ANT_VERSION}/
 
     # TODO - Passwordless ssh

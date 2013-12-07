@@ -3,10 +3,10 @@
 PROTOBUF_VERSION="2.5.0"
 PROTOBUF_DOWNLOAD_URL="https://protobuf.googlecode.com/files/protobuf-2.5.0.tar.bz2"
 
-if [ -d "${HOME}/work/runa" ] ; then
-WHERE="${HOME}/work/runa"
+if [ "" != "${JOB_NAME}" ] ; then
+  WHERE=$(cd ../.. ; pwd)        # Useful on CI to escape dir with spaces
 else
-WHERE=$(cd ../.. ; pwd)        # Useful on CI
+  WHERE="${ROOT_DIR}"
 fi
 
 PROTOBUF_HOME="${WHERE}/protobuf-${PROTOBUF_VERSION}"

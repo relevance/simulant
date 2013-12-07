@@ -1,7 +1,7 @@
 # Dashboard    -*- sh -*-
 #
 
-DASHBOARD_HOME="${HOME}/work/runa/dashboard"
+DASHBOARD_HOME="${ROOT_DIR}/dashboard"
 
 dashboard_check() {
   ls ${DASHBOARD_HOME} >/dev/null 2>&1
@@ -11,7 +11,7 @@ dashboard_install() {
   if dashboard_check ; then
     echo "Dashboard already installed"
   else
-    cd ${HOME}/work/runa
+    cd "${ROOT_DIR}"
     git clone git@github.com:runa-dev/runa_merchant.git dashboard
     cd ${DASHBOARD_HOME}
     ./bin/deps install all

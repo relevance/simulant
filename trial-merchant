@@ -1,6 +1,6 @@
 # Trial Merchant    -*- sh -*-
 
-TRIAL_MERCHANT_HOME="${HOME}/work/runa/trial-merchant"
+TRIAL_MERCHANT_HOME="${ROOT_DIR}/trial-merchant"
 
 trial_merchant_check() {
   ls ${TRIAL_MERCHANT_HOME}  >/dev/null 2>&1
@@ -10,7 +10,7 @@ trial_merchant_install() {
   if trial_merchant_check ; then
     echo "Trial Merchant already installed"
   else
-    cd ${HOME}/work/runa
+    cd "${ROOT_DIR}"
     git clone git@github.com:runa-dev/trial-merchant.git
     cd trial-merchant
 
@@ -23,7 +23,7 @@ trial_merchant_install() {
 }
 
 trial_merchant_uninstall() {
-  rm -rf "${HOME}/work/runa/trial-merchant"
+  rm -rf "${TRIAL_MERCHANT_HOME}"
 }
 
 trial_merchant_status() {
@@ -31,7 +31,7 @@ trial_merchant_status() {
 }
 
 trial_merchant_start() {
-  cd ${TRIAL_MERCHANT_HOME}
+  cd "${TRIAL_MERCHANT_HOME}"
   ${SELECT_RUBY}
   if [ 0 -eq $fg ] ; then
     ./script/server -p 4000 &

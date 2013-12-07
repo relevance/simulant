@@ -1,7 +1,7 @@
 # HBase    -*- sh -*-
 
 HBASE_VERSION="0.94.6-cdh4.4.0"
-HBASE_HOME="${HOME}/work/runa/hbase-${HBASE_VERSION}"
+HBASE_HOME="${ROOT_DIR}/hbase-${HBASE_VERSION}"
 HBASE_DOWNLOAD_URL="http://archive.cloudera.com/cdh4/cdh/4/hbase-${HBASE_VERSION}.tar.gz"
 
 case $PKG in
@@ -23,7 +23,7 @@ hbase_install() {
   if hbase_check ; then
     echo "HBase already installed"
   else
-    cd ~/work/runa/
+    cd "${ROOT_DIR}"
     rm -rf hbase-${HBASE_VERSION}/
     rm -rf /tmp/hbase*
 

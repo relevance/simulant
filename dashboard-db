@@ -18,7 +18,7 @@ dashboard_db_install() {
   if dashboard_db_check ; then
     echo "db already installed"
   else
-    cd ${HOME}/work/runa/dashboard
+    cd "${ROOT_DIR}/dashboard"
     mysql_restart
     sleep 10
 
