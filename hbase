@@ -27,7 +27,20 @@ hbase_install() {
     rm -rf hbase-${HBASE_VERSION}/
     rm -rf /tmp/hbase*
 
-    # TODO - Passwordless ssh
+    if launchctl help >/dev/null 2>&1 ; then
+      ssh_pid=$(sudo launchctl list | grep com.openssh.sshd | cut -f 2)
+      if [ "" = "${ssh_pid}" ] ; then
+        sudo launchctl start com.openssh.sshd || die "You must enable 'Remote Login' on your Mac in 'Sharing' preferences"
+      fi
+    else
+      if service ssh status | grep running >/dev/null 2>&1 ; then
+        echo "Reusing current ssh server"
+      else
+        sudo service ssh start || exit 1
+      fi
+    fi 
+
+    # TODO - Passwordless ssh?
 
     echo "Downloading HBase..."
     if [ ! -f  hbase-${HBASE_VERSION}.tar.gz ] ; then
