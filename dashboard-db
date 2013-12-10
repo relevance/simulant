@@ -25,9 +25,9 @@ dashboard_db_install() {
     sleep 10
 
     if [ "" != "${JOB_NAME}" ] ; then
-      cp -f config/database.ci.yml config/database.yml
+      cp -f config/database.ci.yml config/database.yml || die "Cannot copy DB config"
     else
-      cp -f config/database.example.yml config/database.yml
+      cp -f config/database.example.yml config/database.yml  || die "Cannot copy DB config"
     fi
     rake db:drop
     rake db:create
