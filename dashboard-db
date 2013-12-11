@@ -13,7 +13,7 @@ else
 fi
 
 dashboard_db_check() {
-  echo 'select count(*) from users;' | mysql -h "${DASHBOARD_DB_HOST}" -u "${DASHBOARD_DB_USER}" --password="${DASHBOARD_DB_PASSWORD}" "${DASHBOARD_DB_NAME}" >/dev/null && ls config/database.yml >/dev/null
+  echo 'select count(*) from users;' | mysql -h "${DASHBOARD_DB_HOST}" -u "${DASHBOARD_DB_USER}" --password="${DASHBOARD_DB_PASSWORD}" "${DASHBOARD_DB_NAME}" >/dev/null && ls config/database.yml >/dev/null 2>&1
 }
 
 dashboard_db_install() {
