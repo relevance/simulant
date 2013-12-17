@@ -13,7 +13,7 @@ else
 fi
 
 dashboard_db_check() {
-  echo 'select count(*) from users;' | mysql -h "${DASHBOARD_DB_HOST}" -u "${DASHBOARD_DB_USER}" --password="${DASHBOARD_DB_PASSWORD}" "${DASHBOARD_DB_NAME}" >/dev/null && ls config/database.yml >/dev/null
+  echo 'select count(*) from users;' | mysql -h "${DASHBOARD_DB_HOST}" -u "${DASHBOARD_DB_USER}" --password="${DASHBOARD_DB_PASSWORD}" "${DASHBOARD_DB_NAME}" >/dev/null && ls config/database.yml >/dev/null 2>&1
 }
 
 dashboard_db_install() {
@@ -49,7 +49,11 @@ dashboard_db_uninstall() {
   fi
   sleep 10
 
-  cp -f config/database.example.yml config/database.yml
+  if [ "" != "${JOB_NAME}" ] ; then
+    cp -f config/database.ci.yml config/database.yml || die "Cannot copy DB config"
+  else
+    cp -f config/database.example.yml config/database.yml  || die "Cannot copy DB config"
+  fi
   rake db:drop
   if [ "" != "${JOB_NAME}" ] ; then
     rake db:drop RAILS_ENV=test
