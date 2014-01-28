@@ -1,0 +1,11 @@
+#!/bin/sh
+
+DEPS="lein datomic"
+
+. ./bin/deps.d/prelude
+
+. ./bin/deps.d/lein
+. ./bin/deps.d/java
+. ./bin/deps.d/datomic
+
+. ./bin/deps.d/epilogue
