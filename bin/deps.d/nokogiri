@@ -1,0 +1,17 @@
+# Nokogiri     -*- sh -*-
+
+nokogiri_check() {
+  ${SUDO_GEM} gem list -v 1.5.0 nokogiri | grep nokogiri >/dev/null
+}
+
+nokogiri_install() {
+  if nokogiri_check ; then
+    echo "Nokogiri already installed"
+  else
+    ${SUDO_GEM} gem install -v 1.5.0 nokogiri --no-rdoc --no-ri
+  fi
+}
+
+nokogiri_uninstall() {
+  ${SUDO_GEM} gem uninstall -a nokogiri
+}

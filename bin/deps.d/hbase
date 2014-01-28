@@ -1,0 +1,97 @@
+# HBase    -*- sh -*-
+
+HBASE_VERSION="0.94.6-cdh4.4.0"
+HBASE_HOME="${ROOT_DIR}/hbase-${HBASE_VERSION}"
+HBASE_DOWNLOAD_URL="http://archive.cloudera.com/cdh4/cdh/4/hbase-${HBASE_VERSION}.tar.gz"
+
+case $PKG in
+brew) lzo2_pkg=lzo ;
+      C_INCLUDE_PATH=/usr/local/include ;
+      LIBRARY_PATH=/usr/local/lib ;
+      ;;
+macport) lzo2_pkg=lzo2 ;
+      C_INCLUDE_PATH=/opt/local/include ;
+      LIBRARY_PATH=/opt/local/lib ;
+      ;;
+apt)
+      lzo2_pkg=liblzo2-dev ;
+      C_INCLUDE_PATH=/usr/include ;
+      LIBRARY_PATH=/usr/lib ;
+      ;;
+esac
+
+hbase_check() {
+  ls ${HBASE_HOME} >/dev/null 2>&1
+}
+
+hbase_install() {
+  if hbase_check ; then
+    echo "HBase already installed"
+  else
+    cd "${ROOT_DIR}"
+    rm -rf hbase-${HBASE_VERSION}/
+    rm -rf /tmp/hbase*
+
+    if launchctl help >/dev/null 2>&1 ; then
+      ssh_pid=$(sudo launchctl list | grep com.openssh.sshd | cut -f 2)
+      if [ "" = "${ssh_pid}" ] ; then
+        sudo launchctl start com.openssh.sshd || die "You must enable 'Remote Login' on your Mac in 'Sharing' preferences"
+      fi
+    else
+      if service ssh status | grep running >/dev/null 2>&1 ; then
+        echo "Reusing current ssh server"
+      else
+        sudo service ssh start || exit 1
+      fi
+    fi 
+
+    # TODO - Passwordless ssh?
+
+    echo "Downloading HBase..."
+    if [ ! -f  hbase-${HBASE_VERSION}.tar.gz ] ; then
+       curl -O ${HBASE_DOWNLOAD_URL}
+    fi
+    tar zxvf hbase-${HBASE_VERSION}.tar.gz
+    cd hbase-${HBASE_VERSION}
+    export HBASE_HOME="${PWD}"
+
+    echo "Enabling LZO support for HBase..."
+    ${PKG}_install ${lzo2_pkg}
+    svn checkout http://svn.codespot.com/a/apache-extras.org/hadoop-gpl-compression/trunk/ hadoop-gpl-compression
+    cd hadoop-gpl-compression/
+    cp build.xml build.xml.original
+    awk '{ if ($0 ~ /<class name="com.hadoop.compression.lzo.LzoDecompressor" /) { print ; print "<classpath refid=\"classpath\"/>" } else { print }  }' build.xml.original  > build.xml
+
+    env JAVA_HOME=${JAVA_HOME} C_INCLUDE_PATH=${C_INCLUDE_PATH} LIBRARY_PATH=${LIBRARY_PATH} ant clean compile-native tar
+    cp build/hadoop-gpl-compression-0.2.0-dev/hadoop-gpl-compression-0.2.0-dev.jar "${HBASE_HOME}/lib/"
+    tar -cBf - -C build/hadoop-gpl-compression-0.2.0-dev/lib/native . | tar -xBvf - -C "${HBASE_HOME}/lib/native"
+
+    remember "HBASE_HOME" "${HBASE_HOME}"
+    export HBASE_HOME
+  fi
+}
+
+hbase_uninstall() {
+  rm -rf "${HBASE_HOME}"
+}
+
+hbase_status() {
+  cd "${HBASE_HOME}"
+  echo "status; quit" | ./bin/hbase shell
+}
+
+hbase_start() {
+  cd "${HBASE_HOME}"
+  rm -rf /tmp/hbase*
+  ./bin/start-hbase.sh
+}
+
+hbase_stop() {
+  cd "${HBASE_HOME}"
+  ./bin/stop-hbase.sh
+}
+
+hbase_restart() {
+  hbase_stop
+  hbase_start
+}

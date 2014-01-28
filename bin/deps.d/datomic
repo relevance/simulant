@@ -1,0 +1,51 @@
+# Datomic -*- sh -*-
+
+DATOMIC_VERSION="0.9.4384"
+DATOMIC_HOME="${ROOT_DIR}/datomic-pro-${DATOMIC_VERSION}"
+DATOMIC_DOWNLOAD_S3_URL="s3://runa-software-sources/datomic-pro/datomic-pro-${DATOMIC_VERSION}.tar.gz"
+
+datomic_check() {
+   ls ${DATOMIC_HOME} >/dev/null 2>&1
+}
+
+datomic_status() {
+    if ! pgrep -fl /bin/transactor >/dev/null 2>&1; then
+        echo "NOT RUNNING"
+    else
+        echo "RUNNING"
+    fi
+}
+
+datomic_uninstall() {
+    datomic_stop
+    cd "${ROOT_DIR}"        
+    rm -rf "${DATOMIC_HOME}"
+}
+
+datomic_install() {
+    if datomic_check; then
+        echo "Datomic already installed"
+    else
+        cd ${ROOT_DIR}
+        echo "Downloading Datomic from S3"
+        s3cmd get ${DATOMIC_DOWNLOAD_S3_URL} ./        
+        tar -xvf datomic-pro-${DATOMIC_VERSION}.tar.gz
+    fi
+}
+
+datomic_start() {
+    cd ${DATOMIC_HOME}
+    status=datomic_status
+
+    if pgrep -fl /bin/transactor >/dev/null 2>&1; then
+        echo "Datomic already running!"
+    else
+        ./bin/transactor config/dev-transactor-template.properties
+    fi
+}
+
+
+datomic_stop() {
+    pkill -9 -f -- 'datomic'
+}
+

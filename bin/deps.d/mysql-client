@@ -1,0 +1,40 @@
+# MySQL Client    -*- sh -*-
+
+case $PKG in
+brew) mysql_pkg=mysql ;;
+macport) mysql_pkg=mysql55 ;;
+apt) mysql_pkg=libmysqlclient-dev ;;
+esac
+
+mysql_check() {
+  ${PKG}_check ${mysql_pkg}
+}
+
+mysql_uninstall() {
+  ${PKG}_uninstall ${mysql_pkg}
+}
+
+mysql_install() {
+  if ${PKG}_check ${mysql_pkg} ; then
+    echo "MySQL client already installed"
+  else
+    ${PKG}_install ${mysql_pkg}
+  fi
+}
+
+mysql_status() {
+  echo
+}
+
+mysql_start() {
+  echo
+}
+
+mysql_stop() {
+  echo
+}
+
+mysql_restart() {
+  mysql_stop
+  mysql_start
+}

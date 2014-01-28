@@ -1,0 +1,178 @@
+# Prelude    -*- sh -*-
+
+me=$(basename $0)
+TOP_DIR=$(cd "$(dirname $0)/.."; pwd)
+ROOT_DIR=$(cd "$(dirname $0)/../.."; pwd)
+
+die() {
+   echo "ERROR: $1"
+   exit 1
+}
+
+remember() {
+  echo "$1=\"$2\"" >> ~/.bash_profile
+  echo "export $1" >> ~/.bash_profile
+}
+
+usage() {
+    cat <<EOF
+  USAGE: ${me} <cmd> <dependency>
+
+WHERE <dependency> can be any of: all
+
+    ${DEPS}
+
+WHERE <cmd> can be:
+    check     : Check wether dependency is installed
+    install   : Install dependency
+    uninstall : Uninstall dependency
+
+    status    : Check whether dependency is running
+    start     : Start dependency (when applicable)
+    stop      : Stop dependency
+
+EOF
+}
+
+#### Detect native installer #################
+
+# Ensure install of command line tools
+if [ ! -f /usr/include/stdio.h ] ; then
+    xcode-select --install
+fi
+
+if brew info >/dev/null 2>&1 ; then
+  PKG=brew
+elif port version >/dev/null 2>&1 ; then
+  PKG=macport
+elif apt-get --version >/dev/null 2>&1 ; then
+  PKG=apt
+else
+  echo "Could not find any native installer, please installer brew or macports"
+  exit 1
+fi
+
+#### Brew ##############################
+
+brew_check() {
+  pkg=$1
+  sudo brew list | grep ${pkg} >/dev/null 2>&1
+}
+
+brew_install() {
+  pkg=$1
+  brew install ${pkg} || die "Cannot install ${pkg}"
+}
+
+brew_uninstall() {
+  brew uninstall --force $1
+  brew cleanup
+}
+
+#### MacPort ##############################
+
+macport_check() {
+  pkg=$1
+  sudo port installed | grep ${pkg} >/dev/null 2>&1
+}
+
+macport_install() {
+  pkg=$1
+  sudo port install ${pkg} || die "Cannot install ${pkg}"
+}
+
+macport_uninstall() {
+  sudo port uninstall $1
+}
+
+#### Apt ##############################
+
+apt_check() {
+  pkg=$1
+  sudo dpkg -l | grep ${pkg} >/dev/null 2>&1
+}
+
+apt_install() {
+  pkg=$1
+  sudo apt-get install ${pkg} || die "Cannot install ${pkg}"
+}
+
+apt_uninstall() {
+  sudo apt-get remove $1
+}
+
+#### All ##############################
+
+check_cmd() {
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
+    if ${d}_check ; then
+      echo "${d}\t\t\tOK"
+    else
+      echo "${d}\t\t\tNot installed"
+    fi
+  done
+}
+
+uninstall_cmd() {
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
+    ${d}_uninstall
+  done
+}
+
+install_cmd() {
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
+    ${d}_install
+  done
+}
+
+status_cmd() {
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
+    ${d}_status
+  done
+}
+
+start_cmd() {
+  if [ "--fg" = "$1" ]; then
+    fg=1;
+    shift ;
+  fi
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
+    ${d}_start
+  done
+}
+
+stop_cmd() {
+  if [ "all" = "$1" ] ; then
+      pkgs=${DEPS}
+  else
+      pkgs=$*
+  fi
+  for d in ${pkgs} ; do
+    ${d}_stop
+  done
+}

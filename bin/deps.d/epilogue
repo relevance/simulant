@@ -1,0 +1,20 @@
+# Epilogue    -*- sh -*-
+
+fg=0
+cmd=$1
+shift
+if [ "all" = "$1" ] ; then
+    pkgs=${DEPS}
+else
+    pkgs=$*
+fi
+
+case $cmd in
+check) shift ; check_cmd $pkgs ;;
+install) shift ; install_cmd $pkgs ;;
+uninstall) shift ; uninstall_cmd $pkgs ;;
+status) shift ; status_cmd $pkgs ;;
+start) shift ; start_cmd $pkgs ;;
+stop) shift ; stop_cmd $pkgs ;;
+*) usage; die ;;
+esac

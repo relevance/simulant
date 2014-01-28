@@ -1,0 +1,47 @@
+# Dashboard    -*- sh -*-
+#
+
+DASHBOARD_HOME="${ROOT_DIR}/dashboard"
+
+dashboard_check() {
+  ls ${DASHBOARD_HOME} >/dev/null 2>&1
+}
+
+dashboard_install() {
+  if dashboard_check ; then
+    echo "Dashboard already installed"
+  else
+    cd "${ROOT_DIR}"
+    git clone git@github.com:runa-dev/runa_merchant.git dashboard
+    cd ${DASHBOARD_HOME}
+    ./bin/deps install all
+  fi
+}
+
+dashboard_uninstall() {
+  rm -rf ${DASHBOARD_HOME}
+}
+
+dashboard_status() {
+  curl http://localhost:3000/
+}
+
+dashboard_start() {
+  cd ${DASHBOARD_HOME}
+  ${SELECT_RUBY}
+  if [ "ci" = "${FURTIVE_TEST_ENV}" ] ; then
+    RAILS_ENV=ci
+  else
+    RAILS_ENV=${RAILS_ENV:-development}
+  fi
+
+  if [ 0 -eq $fg ] ; then
+    ./script/server -e ${RAILS_ENV} -p 3000 &
+  else
+    ./script/server -e ${RAILS_ENV} -p 3000
+  fi
+}
+
+dashboard_stop() {
+  pkill -9  -f -- '-p 3000'
+}

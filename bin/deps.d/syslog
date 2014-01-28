@@ -1,0 +1,40 @@
+#  Local Sylog furtive config   -*- sh -*-
+#
+
+syslog_check() {
+  grep '? \[= Facility local0] file swarm.log' /etc/asl.conf >/dev/null
+}
+
+syslog_uninstall() {
+   sudo cp /etc/asl.conf.ORIGINAL /etc/asl.conf
+}
+
+syslog_install() {
+  if syslog_check ; then
+    echo "Already configured syslog"
+  else
+    if [ -f /etc/asl.conf ] ; then
+     sudo cp /etc/asl.conf /etc/asl.conf.ORIGINAL
+
+     sudo bash -c "echo '# Write furtive logs to /var/log/swarm.log' >> /etc/asl.conf"
+     sudo bash -c "echo '? [= Facility local0] file swarm.log' >> /etc/asl.conf"
+
+     sudo launchctl stop com.apple.syslogd
+     sudo launchctl start com.apple.syslogd
+    else
+      echo "WARNING: I do not know how to configure your syslog, make sure local0 is going to /var/log/syslog"
+    fi
+  fi
+}
+
+syslog_status() {
+  sudo launchctl list com.apple.syslogd
+}
+
+syslog_stop() {
+  echo
+}
+
+syslog_stop() {
+  echo
+}

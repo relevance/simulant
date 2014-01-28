@@ -1,0 +1,17 @@
+# mime-types gem   -*- sh -*-
+
+mime_types_gem_check() {
+  ${SUDO_GEM} gem list mime-types | grep mime-types >/dev/null
+}
+
+mime_types_gem_install() {
+  if mime_types_gem_check ; then
+    echo "mime-types gem already installed"
+  else
+    ${SUDO_GEM} gem install mime-types --no-rdoc --no-ri -v 1.20
+  fi
+}
+
+mime_types_gem_uninstall() {
+  ${SUDO_GEM} gem uninstall -a mime-types
+}
